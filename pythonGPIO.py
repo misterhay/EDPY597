@@ -1,34 +1,21 @@
 #!/usr/bin/python
 # some code/ideas borrowed from http://youtu.be/oaf_zQcrg7g
 import time
+delayTime = 0.25
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
-
-pins = [2, 3, 4, 17, 27, 22, 10, 9, 11]
+pins = [2, 3, 4, 17, 27, 22, 10, 9, 14, 15, 18, 23, 24, 25, 8, 7]
+#pins = [2, 3, 4, 17, 27, 22, 10, 9, 11]
 #pins = [14, 15, 18, 23, 24, 25]
 
-delayTime = 0.25
-
-# iterate through pins to set them up
-for i in pins: 
-    GPIO.setup(i, GPIO.OUT) 
-    GPIO.output(i, GPIO.HIGH)
-
-def on(pin):
-    GPIO.output(pin, GPIO.LOW)
-    print pin, 'on'
-
-def off(pin):
-    GPIO.output(pin, GPIO.HIGH)
-    print pin, 'off'
-
-print 'testing outputs'
-for i in pins:
-    on(i)
-    time.sleep(delayTime)
-    off(i)
-print 'done'
-GPIO.cleanup()
+# iterate through pins to set them up and flash them
+for pin in pins:
+   GPIO.setup(pin, GPIO.OUT) 
+   GPIO.output(pin, GPIO.LOW)
+   time.sleep(0.001)
+   GPIO.output(pin, GPIO.HIGH)
+   time.sleep(0.001)
+GPIO.cleanup
 
 '''
 try:

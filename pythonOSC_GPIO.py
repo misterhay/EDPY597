@@ -1,39 +1,52 @@
 #!/usr/bin/python
 # some code/ideas borrowed from http://youtu.be/oaf_zQcrg7g
 
+relayBoard = True #set to False if using LEDs or True if using a relay board (inverts outputs)
+# the pins below will correspond to inputs and outputs
+outputs = [2, 3, 4, 17, 27, 22, 10, 9, 14, 15, 18, 23, 24, 25, 8, 7]
+inputs = []
+
 import time, threading
+import OSC # requires pyOSC
 ##import RPi.GPIO as GPIO
 ##GPIO.setmode(GPIO.BCM)
-# the pins below will correspond to outlets 1 through n (where n is the number of pins used)
-pins = [2, 3, 4, 17, 27, 22, 10, 9, 14, 15, 18, 23, 24, 25, 8, 7]
 
-import OSC # requires pyOSC
-receiveAddress = ('0.0.0.0', 9001) # allow it to receive from anyone on port 9000
-server = OSC.OSCServer(receiveAddress) # set up the OSC server
-server.addDefaultHandlers() # not really necessary, but good practice
-
-def outletHandler(address, typetag, value, source):
+def outputHandler(address, typetag, value, source):
    # typetag should be i for integer (1 for outlet on, 0 for off)
-   # but remember that "on" is GPIO.LOW
-   outlet = int(address.split('/')[2]) # get the outlet number from the OSC address
-   pin = pins[outlet-1] # translate the outlet number back to a pin number
-   print 'pin:', pin, ' outlet:', outlet, ' value:', value
-   if value == [1]:
-      print outlet, 'on'
-##      GPIO.output(pin, GPIO.LOW) # turn on the outlet
+   output = int(address.split('/')[2]) # get the output number from the OSC address
+   pin = outputs[output-1] # translate the output number back to a pin number from the outputs array
+   print 'pin:', pin, ' output:', output, ' value:', value #print what we've learned
+   if relayBoard == True: # will invert the output if you set relayBoard to True
+      if value == [0]:
+         value = [1] # because for the relayBoard "HIGH" is "off"
+      else:
+         value = [0]
    if value == [0]:
-      print outlet, 'off'
-##      GPIO.output(pin, GPIO.HIGH) # turn off the outlet
+      print output, 'off'
+##      GPIO.output(pin, GPIO.LOW) # turn off the pin
+   if value == [1]:
+      print output, 'on'
+##      GPIO.output(pin, GPIO.HIGH) # turn on the pin
    else:
       print 'unknown command'
 
-outlet = 1 # this is the first outlet, we'll iterate from here
-for pin in pins: # iterate through pins to set them up and make sure they are off
+output = 1 # this is the first outlet, we'll iterate from here
+for pin in outputs: # iterate through pins to set them up and make sure they are off
+   print 'setting up output pin', pin, 'as output number', output
 ##   GPIO.setup(pin, GPIO.OUT)
+   if relayBoard == True:
+      print 'making sure the relay pin', pin, 'is off'
 ##   GPIO.output(pin, GPIO.HIGH)
-   server.addMsgHandler('/outlet/'+str(outlet), outletHandler)
-   print '/outlet/'+str(outlet)
-   outlet = outlet + 1
+   outputMessage = '/output/'+str(outlet)
+   server.addMsgHandler(outputMessage, outputHandler)
+   print outputMessage
+   output = output + 1 # iterate the counting variable
+print 'we set up', output, 'pins as outputs'
+
+
+receiveAddress = ('0.0.0.0', 9000) # allow it to receive from anyone on port 9000
+server = OSC.OSCServer(receiveAddress) # set up the OSC server
+server.addDefaultHandlers() # not really necessary, but good practice
 
 threadingServer = threading.Thread(target = server.serve_forever)
 threadingServer.start() # start the server thread we just defined

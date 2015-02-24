@@ -2,6 +2,7 @@
 # some code/ideas borrowed from http://youtu.be/oaf_zQcrg7g
 
 relayBoard = True #set to False if using LEDs or True if using a relay board (inverts outputs)
+
 # the pins below will correspond to inputs and outputs
 outputs = [2, 3, 4, 17, 27, 22, 10, 9, 14, 15, 18, 23, 24, 25, 8, 7]
 inputs = []
@@ -10,9 +11,12 @@ import time, threading
 import OSC # requires pyOSC
 ##import RPi.GPIO as GPIO
 ##GPIO.setmode(GPIO.BCM)
+receiveAddress = ('0.0.0.0', 9000) # allow it to receive from anyone on port 9000
+server = OSC.OSCServer(receiveAddress) # set up the OSC server
+server.addDefaultHandlers() # not really necessary, but good practice
 
 def outputHandler(address, typetag, value, source):
-   # typetag should be i for integer (1 for outlet on, 0 for off)
+   # typetag should be i for integer (1 for output on, 0 for off)
    output = int(address.split('/')[2]) # get the output number from the OSC address
    pin = outputs[output-1] # translate the output number back to a pin number from the outputs array
    print 'pin:', pin, ' output:', output, ' value:', value #print what we've learned
@@ -30,23 +34,18 @@ def outputHandler(address, typetag, value, source):
    else:
       print 'unknown command'
 
-output = 1 # this is the first outlet, we'll iterate from here
+output = 1 # this is the first output, we'll iterate from here
 for pin in outputs: # iterate through pins to set them up and make sure they are off
    print 'setting up output pin', pin, 'as output number', output
 ##   GPIO.setup(pin, GPIO.OUT)
    if relayBoard == True:
       print 'making sure the relay pin', pin, 'is off'
 ##   GPIO.output(pin, GPIO.HIGH)
-   outputMessage = '/output/'+str(outlet)
+   outputMessage = '/output/'+str(outpu)
    server.addMsgHandler(outputMessage, outputHandler)
    print outputMessage
    output = output + 1 # iterate the counting variable
 print 'we set up', output, 'pins as outputs'
-
-
-receiveAddress = ('0.0.0.0', 9000) # allow it to receive from anyone on port 9000
-server = OSC.OSCServer(receiveAddress) # set up the OSC server
-server.addDefaultHandlers() # not really necessary, but good practice
 
 threadingServer = threading.Thread(target = server.serve_forever)
 threadingServer.start() # start the server thread we just defined

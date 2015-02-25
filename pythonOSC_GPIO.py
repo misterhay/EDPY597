@@ -76,9 +76,9 @@ try:
        #time.sleep(5) # do nothing here, just wait for ctrl-c
        for pin in inputs:
           print 'checking pin', pin
-##          if (GPIO.input(pin) == False):
+##          if (GPIO.input(pin) == False): # because we're using a pull-up resistor
 ##             print 'pin', pin, 'is low, so you probably pushed a button'
-##             message = OSCMessage('/input/'+str(pin))
+##             message = OSC.OSCMessage('/input/'+str(pin))
 ##             message.append(1)
 ##             client.send(message)
           

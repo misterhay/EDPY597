@@ -17,7 +17,7 @@ def pinOut(pin, state):
         stateNumber = 0
     if state == 'off':
         stateNumber = 1
-    GPIO.output(i, stateNumber) #
+    GPIO.output(pin, stateNumber)
 
 def setAll(state):
     print 'Turning them all', state
@@ -37,10 +37,10 @@ columnNumber = 0 #initialize a variable for counting the columns
 
 for pin in pins:
     #make two buttons (on and off) for each pin in the array declared above
-    #
     Button(controlWindow, text=pin, background=onColour, command=lambda pin=pin: pinOut(pin, 'on')).grid(row=1, column=columnNumber)
     Button(controlWindow, text=pin, background=offColour, command=lambda pin=pin: pinOut(pin, 'off')).grid(row=2, column=columnNumber)
     columnNumber = columnNumber + 1 #increase this variable by one to prepare for the next iteration
+#create allOn and allOff buttons
 Button(controlWindow, text='all', background=onColour, command=lambda: setAll('on')).grid(row=1, column=columnNumber)
-Button(controlWindow, text='all', background=offColour, command=lambda setAll('off')).grid(row=2, column=columnNumber)
+Button(controlWindow, text='all', background=offColour, command=lambda: setAll('off')).grid(row=2, column=columnNumber)
 controlWindow.mainloop() #show the window

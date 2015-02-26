@@ -9,7 +9,6 @@ import OSC # requires pyOSC from https://trac.v2.nl/wiki/pyOSC or https://gitori
 import pygame
 
 sendAddress = (remoteIP, remotePort)
-
 client = OSC.OSCClient() # set up then connect to the OSC receiving server
 client.connect((sendAddress)) #not sure if we need both sets of parentheses
 
@@ -17,8 +16,6 @@ def sendOSC(button, state):
    message = OSC.OSCMessage('/output/'+str(button))
    message.append(state)
    client.send(message)
-
-#sendOSC(2, 0)
 
 pygame.init()
 joystickCount = pygame.joystick.get_count()

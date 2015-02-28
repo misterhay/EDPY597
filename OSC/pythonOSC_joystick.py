@@ -12,9 +12,10 @@ sendAddress = (remoteIP, remotePort)
 client = OSC.OSCClient() # set up then connect to the OSC receiving server
 client.connect((sendAddress)) #not sure if we need both sets of parentheses
 
-def sendOSC(button, state):
-   message = OSC.OSCMessage('/output/'+str(button))
+def sendOSC(pin, state):
+   message = OSC.OSCMessage('/output/'+str(pin))
    message.append(state)
+   print message
    client.send(message)
 
 pygame.init()
@@ -30,10 +31,16 @@ try:
    while 1:
       for event in pygame.event.get():
          if event.type == 10: # button down
-            print event.button
-            sendOSC(event.button, 1)
+            #print event.button
+            pin = event.button + 1 # since the buttons start at 0
+            #print pin
+            sendOSC(pin, 1) 
          if event.type == 11: # button up
-            print event.button
-            sendOSC(event.button, 0)
+            pin = event.button + 1
+            sendOSC(pin, 0)
+         #if event.type == 7: # axis move
+            #print event.axis
+            #print event.value  
+      pygame.event.clear()
 except KeyboardInterrupt:
    print 'Done'

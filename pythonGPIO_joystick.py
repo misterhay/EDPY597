@@ -51,11 +51,11 @@ try:
       for event in pygame.event.get():
          if event.type == 10: # button down
             #print event.button
-            pin = event.button + 1 # since the buttons start at 0
+            pin = outputs[event.button + 1] # since the buttons start at 0
             #print pin
             setPin(pin, 1) 
          if event.type == 11: # button up
-            pin = event.button + 1
+            pin = outputs[event.button + 1]
             setPin(pin, 0)
          #if event.type == 7: # axis move
             #print event.axis

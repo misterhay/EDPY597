@@ -1,4 +1,4 @@
-# Drum loop five, another loop
+# Drum loop six, another loop
 beat_length = 0.5
 
 4.times do

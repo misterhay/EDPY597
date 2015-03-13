@@ -47,6 +47,15 @@ def outputHandler(address, typetag, value, source):
 
 if outputs: # if the outputs list is not empty
    outputNumber = 0 # this is the first output, we'll iterate from here
+   
+   # some things for the interface window
+   from Tkinter import *
+   controlWindow = Tk() #we're going to create a window full of buttons
+   controlWindow.title('GPIO Output Buttons') #set the title of the window
+   onColour = 'green' #the colour of the on buttons we'll use below
+   offColour = 'red' #the colour of the off buttons
+   columnNumber = 0 #initialize a variable for counting the columns
+
    for pin in outputs: # iterate through pins to set them up and make sure they are off
       outputNumber = outputNumber + 1 # iterate the counting variable
 ##      GPIO.setup(pin, GPIO.OUT)
@@ -56,7 +65,14 @@ if outputs: # if the outputs list is not empty
       outputMessage = '/output/'+str(outputNumber)
       server.addMsgHandler(outputMessage, outputHandler)
       print 'To turn on pin', pin, 'send', outputMessage, '[1]'
+      
+      #make two buttons (on and off) for each pin in the array declared above
+      Button(controlWindow, text=pin, background=onColour, command=lambda pin=pin: pinOut(pin, 'on')).grid(row=1, column=columnNumber)
+      Button(controlWindow, text=pin, background=offColour, command=lambda pin=pin: pinOut(pin, 'off')).grid(row=2, column=columnNumber)
+      columnNumber = columnNumber + 1 #increase this variable by one to prepare for the next iteration
+   
    print 'we set up', outputNumber, 'pins as outputs'
+   controlWindow.mainloop() #show the interface window
 
 if inputs:
    client = OSC.OSCClient() # set up then connect to the OSC receiving server
